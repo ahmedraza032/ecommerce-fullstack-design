@@ -1,27 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  FaCheck, FaStar, FaRegStar, FaHeart, FaThLarge, FaListUl,
+  FaCheck, FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaThLarge, FaListUl,
   FaChevronUp, FaChevronDown, FaTimes, FaShoppingCart, FaUser,
   FaSearch, FaSlidersH, FaArrowLeft, FaChevronLeft, FaChevronRight,
   FaSpinner, FaExclamationTriangle
 } from 'react-icons/fa';
 import { getProducts } from '../services/api';
 import { useCart } from '../context/CartContext';
+import ProductImage from '../components/ProductImage';
 import './ProductList.css';
 
 const ITEMS_PER_PAGE = 9;
 
 /* ── Stars helper ────────────────────────────────────────────────────────────── */
 function Stars({ rating = 0 }) {
-  const full = Math.round((rating / 10) * 5);
+  // Rating is natively 0-5
+  const score = Number(rating);
+  const fullStars = Math.floor(score);
+  const hasHalfStar = score - fullStars >= 0.25;
+
   return (
-    <div className="rating-stars">
-      {[...Array(5)].map((_, i) =>
-        i < full
-          ? <FaStar key={i} />
-          : <FaRegStar key={i} color="#cbd5e0" />
-      )}
+    <div className="rating-stars" style={{ color: '#ff9017', display: 'flex', gap: '2px', alignItems: 'center' }}>
+      {[...Array(5)].map((_, i) => {
+        if (i < fullStars) return <FaStar key={i} />;
+        if (i === fullStars && hasHalfStar) return <FaStarHalfAlt key={i} />;
+        return <FaRegStar key={i} color="#cbd5e0" />;
+      })}
     </div>
   );
 }
@@ -333,7 +338,7 @@ export default function ProductList() {
                     /* LIST CARD */
                     <div key={p.id} className="product-list-card">
                       <div className="product-list-img-wrap">
-                        <img src={p.image} alt={p.name} />
+                        <ProductImage src={p.image} alt={p.name} />
                       </div>
                       <div className="product-list-info">
                         <h3 className="product-list-title">{p.name}</h3>
@@ -358,13 +363,13 @@ export default function ProductList() {
                           </button>
                         </div>
                       </div>
-                      <button className="favorite-btn" aria-label="Save to wishlist"><FaHeart /></button>
+                      <button className="favorite-btn" aria-label="Save to wishlist"><FaRegHeart /></button>
                     </div>
                   ) : (
                     /* GRID CARD */
                     <Link to={`/product/${p.id}`} key={p.id} className="product-grid-card" style={{ textDecoration: 'none', color: 'inherit' }}>
                       <div className="product-grid-img-wrap">
-                        <img src={p.image} alt={p.name} />
+                        <ProductImage src={p.image} alt={p.name} />
                       </div>
                       <div className="product-grid-details">
                         <div className="grid-price-row">
@@ -377,7 +382,7 @@ export default function ProductList() {
                             aria-label="Save to wishlist"
                             onClick={e => e.preventDefault()}
                           >
-                            <FaHeart />
+                            <FaRegHeart />
                           </button>
                         </div>
                         <div className="grid-rating-row">

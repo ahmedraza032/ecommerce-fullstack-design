@@ -1,22 +1,29 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
-  FaCheck, FaStar, FaRegStar, FaCommentDots,
+  FaCheck, FaStar, FaRegStar, FaStarHalfAlt, FaCommentDots,
   FaShoppingBasket, FaShieldAlt, FaGlobeAmericas, FaRegHeart,
   FaArrowLeft, FaShoppingCart, FaSpinner, FaExclamationTriangle,
   FaMinus, FaPlus
 } from 'react-icons/fa';
 import { getProductById, getProducts } from '../services/api';
 import { useCart } from '../context/CartContext';
+import ProductImage from '../components/ProductImage';
 import './ProductDetail.css';
 
 function Stars({ rating = 0 }) {
-  const full = Math.round((rating / 10) * 5);
+  // Rating is natively 0-5
+  const score = Number(rating);
+  const fullStars = Math.floor(score);
+  const hasHalfStar = score - fullStars >= 0.25;
+
   return (
-    <div className="rating-stars" style={{ color: '#ff9017' }}>
-      {[...Array(5)].map((_, i) =>
-        i < full ? <FaStar key={i} /> : <FaRegStar key={i} />
-      )}
+    <div className="rating-stars" style={{ color: '#ff9017', display: 'flex', gap: '2px', alignItems: 'center' }}>
+      {[...Array(5)].map((_, i) => {
+        if (i < fullStars) return <FaStar key={i} />;
+        if (i === fullStars && hasHalfStar) return <FaStarHalfAlt key={i} />;
+        return <FaRegStar key={i} color="#cbd5e0" />;
+      })}
     </div>
   );
 }
@@ -143,7 +150,7 @@ export default function ProductDetail() {
               {discountPct && (
                 <span className="pd-discount-badge">-{discountPct}%</span>
               )}
-              <img src={activeImage || product.image} alt={product.name} />
+              <ProductImage src={activeImage || product.image} alt={product.name} />
             </div>
             <div className="thumbnail-list">
               {/* Show up to 4 thumbnails (main image repeated as previews) */}
@@ -153,7 +160,7 @@ export default function ProductDetail() {
                   className={`thumb-wrap ${activeImage === img ? 'active' : ''}`}
                   onClick={() => setActiveImage(img)}
                 >
-                  <img src={img} alt={`Thumb ${idx + 1}`} />
+                  <ProductImage src={img} alt={`Thumb ${idx + 1}`} />
                 </div>
               ))}
             </div>
@@ -222,7 +229,7 @@ export default function ProductDetail() {
               </div>
               <div className="spec-row">
                 <div className="spec-label">Rating:</div>
-                <div className="spec-value">{product.rating} / 10</div>
+                <div className="spec-value">{product.rating} / 5</div>
               </div>
             </div>
 

@@ -40,4 +40,9 @@ export const updateProduct = (id, data) => api.put(`/products/${id}`, data);
 /** Delete a product */
 export const deleteProduct = (id) => api.delete(`/products/${id}`);
 
+/** Upload an image */
+export const uploadImage = (formData) => api.post('/products/upload', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
+
 export default api;

@@ -120,7 +120,7 @@ export default function Navbar() {
       <div className="secondary-nav desktop-sec-nav">
         <div className="container secondary-nav-inner">
           <div className="sec-nav-left">
-            <button className="all-category-btn">
+            <button className="all-category-btn" onClick={() => navigate('/products')}>
               <FaBars /> All category
             </button>
             <Link to="/products?category=Electronics">Electronics</Link>
@@ -132,6 +132,7 @@ export default function Navbar() {
           <div className="sec-nav-right">
             <span>English, USD</span>
             <span>🚚 Free shipping</span>
+            <Link to="/admin/products" style={{ color: '#ff9017', fontWeight: 600 }}>⚙ Admin</Link>
           </div>
         </div>
       </div>

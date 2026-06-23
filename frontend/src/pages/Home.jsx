@@ -5,6 +5,7 @@ import {
   FaShoppingCart, FaUser, FaBars, FaSpinner, FaExclamationTriangle
 } from 'react-icons/fa';
 import { getProducts, getFeaturedProducts } from '../services/api';
+import ProductImage from '../components/ProductImage';
 import './Home.css';
 
 // ── Countdown Timer ───────────────────────────────────────────────────────────
@@ -248,7 +249,7 @@ export default function Home() {
               ) : featuredProducts.slice(0, 5).map(p => (
                 <Link to={`/product/${p.id}`} key={p.id} className="deal-card">
                   <div className="deal-img-wrap">
-                    <img src={p.image} alt={p.name} />
+                    <ProductImage src={p.image} alt={p.name} />
                   </div>
                   <p className="deal-name">{p.name}</p>
                   {p.oldPrice && (
@@ -280,7 +281,7 @@ export default function Home() {
               ) : homeProducts.map(p => (
                 <Link to={`/product/${p.id}`} key={p.id} className="cat-product-card">
                   <div className="cat-product-img">
-                    <img src={p.image} alt={p.name} />
+                    <ProductImage src={p.image} alt={p.name} />
                   </div>
                   <p className="cat-prod-name">{p.name}</p>
                   <p className="cat-prod-sub">From USD {p.price.toFixed(0)}</p>
@@ -309,7 +310,7 @@ export default function Home() {
               ) : electronics.map(p => (
                 <Link to={`/product/${p.id}`} key={p.id} className="cat-product-card">
                   <div className="cat-product-img">
-                    <img src={p.image} alt={p.name} />
+                    <ProductImage src={p.image} alt={p.name} />
                   </div>
                   <p className="cat-prod-name">{p.name}</p>
                   <p className="cat-prod-sub">From USD {p.price.toFixed(0)}</p>
@@ -362,7 +363,7 @@ export default function Home() {
             ) : recommended.map(p => (
               <Link to={`/product/${p.id}`} key={p.id} className="recommended-card card">
                 <div className="recommended-img-wrap">
-                  <img src={p.image} alt={p.name} />
+                  <ProductImage src={p.image} alt={p.name} />
                 </div>
                 <div className="recommended-info">
                   <p className="recommended-price">${p.price.toFixed(2)}</p>

@@ -34,6 +34,10 @@ app.use(express.json());
 const productsRouter = require('./routes/products');
 app.use('/api/products', productsRouter);
 
+// Serve uploaded images statically
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Health check
 app.get('/', (req, res) => {
   res.json({
