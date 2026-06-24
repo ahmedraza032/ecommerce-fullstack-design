@@ -4,16 +4,8 @@ const admin = require('firebase-admin');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads/'))
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname))
-  }
-})
+// Configure multer for file uploads using memory storage (for Vercel serverless compatibility)
+const storage = multer.memoryStorage();
 
 const upload = multer({ 
   storage: storage,
@@ -67,8 +59,9 @@ router.post('/upload', authenticateAdmin, upload.single('image'), (req, res) => 
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
-    // Return the URL for the uploaded file
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    // Convert buffer to Base64 Data URL to bypass Vercel serverless read-only filesystem
+    const base64Image = req.file.buffer.toString('base64');
+    const fileUrl = `data:${req.file.mimetype};base64,${base64Image}`;
     res.json({ success: true, url: fileUrl });
   } catch (err) {
     console.error('POST /upload error:', err);
