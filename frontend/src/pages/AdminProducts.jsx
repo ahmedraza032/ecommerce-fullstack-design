@@ -104,6 +104,7 @@ function ProductModal({ mode, product, onSave, onClose, saving }) {
     if (!validate()) return;
     onSave({
       ...form,
+      imageURL: form.image,
       price:    Number(form.price),
       oldPrice: form.oldPrice ? Number(form.oldPrice) : null,
       stock:    form.stock    ? Number(form.stock)    : 0,

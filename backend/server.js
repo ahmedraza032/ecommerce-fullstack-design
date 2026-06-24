@@ -42,9 +42,7 @@ app.use(express.json());
 const productsRouter = require('./routes/products');
 app.use('/api/products', productsRouter);
 
-// Serve uploaded images statically
-const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Note: Static uploads serving removed in favor of Firebase Storage.
 
 // Health check
 app.get('/', (req, res) => {

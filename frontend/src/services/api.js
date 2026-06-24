@@ -59,19 +59,31 @@ export const updateProduct = (id, data) => api.put(`/products/${id}`, data);
 /** Delete a product */
 export const deleteProduct = (id) => api.delete(`/products/${id}`);
 
-/** Upload an image - Converts file to Base64 Data URL directly to completely bypass Vercel serverless multipart/multer limitations */
+/** Upload an image directly to Cloudinary */
 export const uploadImage = async (formData) => {
   const file = formData.get('image');
   if (!file) {
     throw new Error('No file selected');
   }
-  const base64Url = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(file);
-  });
-  return { success: true, url: base64Url };
+
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName || !uploadPreset || cloudName.includes('your_cloud_name')) {
+    throw new Error('Cloudinary configuration missing in environment variables (VITE_CLOUDINARY_CLOUD_NAME / VITE_CLOUDINARY_UPLOAD_PRESET)');
+  }
+
+  const cloudinaryData = new FormData();
+  cloudinaryData.append('file', file);
+  cloudinaryData.append('upload_preset', uploadPreset);
+
+  const res = await axios.post(
+    `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+    cloudinaryData,
+    { headers: { 'Content-Type': 'multipart/form-data' } }
+  );
+
+  return { success: true, url: res.data.secure_url };
 };
 
 export default api;

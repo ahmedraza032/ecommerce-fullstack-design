@@ -1,23 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const admin = require('firebase-admin');
-const multer = require('multer');
-const path = require('path');
-
-// Configure multer for file uploads using memory storage (for Vercel serverless compatibility)
-const storage = multer.memoryStorage();
-
-const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Not an image! Please upload an image.'), false);
-    }
-  }
-});
 
 // Helper to get the products DB reference
 const getRef = () => admin.database().ref('products');
@@ -53,27 +36,7 @@ async function authenticateAdmin(req, res, next) {
   }
 }
 
-// ── POST /api/products/upload ──────────────────────────────────────────────────
-router.post('/upload', authenticateAdmin, (req, res) => {
-  upload.single('image')(req, res, (err) => {
-    if (err) {
-      console.error('Multer upload error:', err);
-      return res.status(500).json({ success: false, error: 'Upload error: ' + err.message });
-    }
-    try {
-      if (!req.file) {
-        return res.status(400).json({ success: false, error: 'No file uploaded' });
-      }
-      // Convert buffer to Base64 Data URL to bypass Vercel serverless read-only filesystem
-      const base64Image = req.file.buffer.toString('base64');
-      const fileUrl = `data:${req.file.mimetype};base64,${base64Image}`;
-      res.json({ success: true, url: fileUrl });
-    } catch (error) {
-      console.error('POST /upload processing error:', error);
-      res.status(500).json({ success: false, error: error.message });
-    }
-  });
-});
+// Note: Image upload route removed; frontend uploads directly to Firebase Storage.
 
 // ── GET /api/products/featured ─────────────────────────────────────────────────
 // Must be defined BEFORE /:id so the route isn't captured as an id
@@ -140,7 +103,7 @@ router.get('/:id', async (req, res) => {
 // ── POST /api/products ─────────────────────────────────────────────────────────
 router.post('/', authenticateAdmin, async (req, res) => {
   try {
-    const { name, price, image, description, category, stock, featured, oldPrice, rating } = req.body;
+    const { name, price, image, imageURL, description, category, stock, featured, oldPrice, rating } = req.body;
 
     // Validation
     if (!name || !price || !category) {
@@ -151,7 +114,7 @@ router.post('/', authenticateAdmin, async (req, res) => {
       name,
       price: Number(price),
       oldPrice: oldPrice ? Number(oldPrice) : null,
-      image: image || '',
+      image: imageURL || image || '',
       description: description || '',
       category,
       stock: stock !== undefined ? Number(stock) : 0,
@@ -177,6 +140,10 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
     }
 
     const updates = { ...req.body, updatedAt: Date.now() };
+    if (updates.imageURL !== undefined) {
+      updates.image = updates.imageURL;
+      delete updates.imageURL;
+    }
     // Coerce types
     if (updates.price !== undefined) updates.price = Number(updates.price);
     if (updates.oldPrice !== undefined) updates.oldPrice = updates.oldPrice ? Number(updates.oldPrice) : null;
