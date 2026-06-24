@@ -136,19 +136,6 @@ export default function Home() {
   return (
     <div className="home-page">
 
-      {/* ── MOBILE TOPBAR ────────────────────────────────────── */}
-      <div className="mobile-topbar">
-        <button className="mobile-menu-btn"><FaBars /></button>
-        <Link to="/" className="mobile-brand">
-          <span className="mobile-brand-icon">🛍</span>
-          <span className="mobile-brand-name">Brand</span>
-        </Link>
-        <div className="mobile-topbar-actions">
-          <Link to="/cart" className="mobile-topbar-icon"><FaShoppingCart /></Link>
-          <Link to="/login" className="mobile-topbar-icon"><FaUser /></Link>
-        </div>
-      </div>
-
       {/* ── MOBILE SEARCH ────────────────────────────────────── */}
       <div className="mobile-search-bar">
         <form className="mobile-search-inner" onSubmit={handleSearch}>

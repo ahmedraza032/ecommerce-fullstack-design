@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaExclamationCircle, FaSpinner } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaExclamationCircle, FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './Signup.css';
 
@@ -8,6 +8,8 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
@@ -69,14 +71,22 @@ export default function Signup() {
             <div className="auth-input-wrap">
               <input
                 id="password"
-                type="password"
-                className="auth-input"
+                type={showPassword ? 'text' : 'password'}
+                className="auth-input has-toggle"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
               <FaLock className="auth-icon" />
+              <button
+                type="button"
+                className="auth-toggle-pwd"
+                onClick={() => setShowPassword(!showPassword)}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
             </div>
           </div>
 
@@ -85,14 +95,22 @@ export default function Signup() {
             <div className="auth-input-wrap">
               <input
                 id="password-confirm"
-                type="password"
-                className="auth-input"
+                type={showPasswordConfirm ? 'text' : 'password'}
+                className="auth-input has-toggle"
                 placeholder="••••••••"
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 required
               />
               <FaLock className="auth-icon" />
+              <button
+                type="button"
+                className="auth-toggle-pwd"
+                onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                title={showPasswordConfirm ? "Hide password" : "Show password"}
+              >
+                {showPasswordConfirm ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
             </div>
           </div>
 

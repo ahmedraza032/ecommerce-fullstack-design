@@ -506,7 +506,29 @@
 
   /* Category: scroll horizontally */
   .category-section { display: flex; flex-direction: column; }
-  .category-banner { display: none; }
+  .category-banner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: unset;
+    padding: 0.75rem 1rem;
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 1rem;
+  }
+  .category-banner h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+  }
+  .cat-banner-img {
+    display: block;
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 0;
+  }
   .category-products-grid {
     display: flex;
     overflow-x: auto;

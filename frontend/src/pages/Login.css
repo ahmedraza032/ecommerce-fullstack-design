@@ -93,6 +93,24 @@
   transition: color 0.2s ease;
 }
 
+.auth-toggle-pwd {
+  position: absolute;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.auth-toggle-pwd:hover {
+  color: #334155;
+}
+
 .auth-input {
   width: 100%;
   padding: 0.875rem 1.25rem 0.875rem 3rem;
@@ -102,6 +120,10 @@
   font-size: 0.95rem;
   color: #0f172a;
   transition: all 0.2s ease;
+}
+
+.auth-input.has-toggle {
+  padding-right: 3rem;
 }
 
 .auth-input::placeholder {

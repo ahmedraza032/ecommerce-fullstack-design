@@ -101,36 +101,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── MOBILE SEARCH & PILLS ────────────────────────────────── */}
-      <div className="mobile-sub-nav">
-        <div className="container">
-          <form className="mobile-search-box" onSubmit={handleSearch}>
-            <FaSearch className="mobile-search-icon" color="#8b96a5" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </form>
-          <div className="mobile-category-pills">
-            {['All', 'Electronics', 'Clothing', 'Home', 'Sports'].map((cat, i) => (
-              <span
-                key={cat}
-                className={`pill ${category === (cat === 'All' ? 'All category' : cat) ? 'active' : ''}`}
-                onClick={() => {
-                  const val = cat === 'All' ? 'All category' : cat;
-                  setCategory(val);
-                  navigate(`/products${val !== 'All category' ? `?category=${val}` : ''}`);
-                }}
-              >
-                {cat}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* ── SECONDARY NAV (Desktop) ──────────────────────────────── */}
       <div className="secondary-nav desktop-sec-nav">
         <div className="container secondary-nav-inner">
@@ -165,8 +135,24 @@ export default function Navbar() {
               </button>
             </div>
             <div className="drawer-body">
+              <form className="mobile-search-box" onSubmit={(e) => { handleSearch(e); setMobileMenuOpen(false); }}>
+                <FaSearch className="mobile-search-icon" color="#8b96a5" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+              </form>
+              <div className="drawer-divider"></div>
               <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
               <Link to="/products" onClick={() => setMobileMenuOpen(false)}>All Products</Link>
+              <Link to="/products?category=Electronics" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', color: '#64748b' }}>↳ Electronics</Link>
+              <Link to="/products?category=Clothing" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', color: '#64748b' }}>↳ Clothing</Link>
+              <Link to="/products?category=Home+%26+Outdoor" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', color: '#64748b' }}>↳ Home & Outdoor</Link>
+              <Link to="/products?category=Sports" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', color: '#64748b' }}>↳ Sports</Link>
+              <Link to="/products?category=Accessories" onClick={() => setMobileMenuOpen(false)} style={{ fontSize: '0.95rem', color: '#64748b' }}>↳ Accessories</Link>
+              <div className="drawer-divider"></div>
               <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>My Cart ({itemCount})</Link>
               {isAdmin && (
                 <Link to="/admin/products" onClick={() => setMobileMenuOpen(false)} style={{ color: '#ff9017', fontWeight: 700 }}>

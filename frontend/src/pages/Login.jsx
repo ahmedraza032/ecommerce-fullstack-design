@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaExclamationCircle, FaSpinner } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaExclamationCircle, FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -68,14 +69,22 @@ export default function Login() {
             <div className="auth-input-wrap">
               <input
                 id="password"
-                type="password"
-                className="auth-input"
+                type={showPassword ? 'text' : 'password'}
+                className="auth-input has-toggle"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
               <FaLock className="auth-icon" />
+              <button
+                type="button"
+                className="auth-toggle-pwd"
+                onClick={() => setShowPassword(!showPassword)}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
             </div>
           </div>
 

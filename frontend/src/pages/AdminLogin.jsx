@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { FaEnvelope, FaLock, FaExclamationCircle, FaSpinner, FaShieldAlt, FaArrowLeft } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaExclamationCircle, FaSpinner, FaShieldAlt, FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './Login.css'; // Reusing premium auth styles
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -80,14 +81,22 @@ export default function AdminLogin() {
             <div className="auth-input-wrap">
               <input
                 id="admin-password"
-                type="password"
-                className="auth-input"
+                type={showPassword ? 'text' : 'password'}
+                className="auth-input has-toggle"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
               <FaLock className="auth-icon" />
+              <button
+                type="button"
+                className="auth-toggle-pwd"
+                onClick={() => setShowPassword(!showPassword)}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+              </button>
             </div>
           </div>
 
