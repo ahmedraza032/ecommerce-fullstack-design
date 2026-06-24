@@ -67,7 +67,12 @@ app.use((err, req, res, next) => {
 
 // ── Start Server ───────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-  console.log(`📦 Firebase Realtime DB: ${process.env.FIREBASE_DATABASE_URL}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`✅ Server running at http://localhost:${PORT}`);
+    console.log(`📦 Firebase Realtime DB: ${process.env.FIREBASE_DATABASE_URL}`);
+  });
+}
+
+// Export for Vercel Serverless Functions
+module.exports = app;
