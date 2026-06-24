@@ -24,15 +24,17 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 app.use(express.json());
 
 // ── Routes ─────────────────────────────────────────────────────────────────────
 const productsRouter = require('./routes/products');
 app.use('/api/products', productsRouter);
+app.use('/_/backend/api/products', productsRouter);
 
 // Serve uploaded images statically
 const path = require('path');
