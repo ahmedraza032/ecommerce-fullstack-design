@@ -2,10 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json');
 
 // ── Firebase Admin Initialization ──────────────────────────────────────────────
-// Normalize escaped newlines in the private key (common issue with JSON-loaded keys)
+// Load service account from env var (for Vercel) or local file (for dev)
+let serviceAccount;
+if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+} else {
+  serviceAccount = require('./serviceAccountKey.json');
+}
+
+// Normalize escaped newlines in the private key
 if (serviceAccount.private_key) {
   serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 }
@@ -34,7 +41,6 @@ app.use(express.json());
 // ── Routes ─────────────────────────────────────────────────────────────────────
 const productsRouter = require('./routes/products');
 app.use('/api/products', productsRouter);
-app.use('/_/backend/api/products', productsRouter);
 
 // Serve uploaded images statically
 const path = require('path');
