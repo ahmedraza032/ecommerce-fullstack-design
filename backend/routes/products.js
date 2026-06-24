@@ -39,8 +39,30 @@ function snapshotToArray(snapshot) {
   return result;
 }
 
+// ── Middleware: Authenticate Admin ─────────────────────────────────────────────
+async function authenticateAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ success: false, error: 'Unauthorized: Missing or invalid token' });
+  }
+
+  const token = authHeader.split('Bearer ')[1].trim();
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+    if (decodedToken.email !== adminEmail) {
+      return res.status(403).json({ success: false, error: 'Forbidden: Admin privileges required' });
+    }
+    req.user = decodedToken;
+    next();
+  } catch (err) {
+    console.error('Verify ID token error:', err);
+    return res.status(401).json({ success: false, error: 'Unauthorized: Invalid or expired token' });
+  }
+}
+
 // ── POST /api/products/upload ──────────────────────────────────────────────────
-router.post('/upload', upload.single('image'), (req, res) => {
+router.post('/upload', authenticateAdmin, upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, error: 'No file uploaded' });
@@ -117,7 +139,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // ── POST /api/products ─────────────────────────────────────────────────────────
-router.post('/', async (req, res) => {
+router.post('/', authenticateAdmin, async (req, res) => {
   try {
     const { name, price, image, description, category, stock, featured, oldPrice, rating } = req.body;
 
@@ -148,7 +170,7 @@ router.post('/', async (req, res) => {
 });
 
 // ── PUT /api/products/:id ──────────────────────────────────────────────────────
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateAdmin, async (req, res) => {
   try {
     const snapshot = await getRef().child(req.params.id).once('value');
     if (!snapshot.exists()) {
@@ -173,7 +195,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // ── DELETE /api/products/:id ───────────────────────────────────────────────────
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateAdmin, async (req, res) => {
   try {
     const snapshot = await getRef().child(req.params.id).once('value');
     if (!snapshot.exists()) {

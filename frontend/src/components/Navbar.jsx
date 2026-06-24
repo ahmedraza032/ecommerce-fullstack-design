@@ -1,7 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { FaUser, FaCommentDots, FaHeart, FaShoppingCart, FaBars, FaSearch } from 'react-icons/fa';
+import { FaUser, FaCommentDots, FaHeart, FaShoppingCart, FaBars, FaSearch, FaTimes, FaSignOutAlt } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const categories = [
@@ -12,8 +13,10 @@ const categories = [
 export default function Navbar() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All category');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { itemCount } = useCart();
+  const { currentUser, isAdmin, logout } = useAuth();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -29,7 +32,7 @@ export default function Navbar() {
       <div className="nav-top">
         <div className="container nav-top-inner">
           <div className="mobile-left">
-            <button className="mobile-menu-btn">
+            <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(true)}>
               <FaBars />
             </button>
             <Link to="/" className="brand-logo">
@@ -63,10 +66,22 @@ export default function Navbar() {
 
           {/* Right Icons */}
           <div className="nav-icons">
-            <Link to="/login" className="nav-icon-item">
-              <FaUser className="icon" />
-              <span className="desktop-text">Profile</span>
-            </Link>
+            {currentUser ? (
+              <div className="nav-icon-item user-profile-menu">
+                <FaUser className="icon text-primary" style={{ color: '#0d6efd' }} />
+                <span className="desktop-text" title={currentUser.email}>
+                  {currentUser.email.split('@')[0]}
+                </span>
+                <button className="btn-logout-sm" onClick={() => logout()} title="Logout">
+                  <FaSignOutAlt />
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="nav-icon-item">
+                <FaUser className="icon" />
+                <span className="desktop-text">Profile</span>
+              </Link>
+            )}
             <Link to="/messages" className="nav-icon-item desktop-icon">
               <FaCommentDots className="icon" />
               <span className="desktop-text">Message</span>
@@ -132,10 +147,47 @@ export default function Navbar() {
           <div className="sec-nav-right">
             <span>English, USD</span>
             <span>🚚 Free shipping</span>
-            <Link to="/admin/products" style={{ color: '#ff9017', fontWeight: 600 }}>⚙ Admin</Link>
+            {isAdmin && (
+              <Link to="/admin/products" style={{ color: '#ff9017', fontWeight: 600 }}>⚙ Admin</Link>
+            )}
           </div>
         </div>
       </div>
+
+      {/* ── MOBILE DRAWER MENU ───────────────────────────────────── */}
+      {mobileMenuOpen && (
+        <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-drawer" onClick={e => e.stopPropagation()}>
+            <div className="drawer-header">
+              <h3>{currentUser ? `Hi, ${currentUser.email.split('@')[0]}` : 'Menu'}</h3>
+              <button className="drawer-close-btn" onClick={() => setMobileMenuOpen(false)}>
+                <FaTimes />
+              </button>
+            </div>
+            <div className="drawer-body">
+              <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+              <Link to="/products" onClick={() => setMobileMenuOpen(false)}>All Products</Link>
+              <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>My Cart ({itemCount})</Link>
+              {isAdmin && (
+                <Link to="/admin/products" onClick={() => setMobileMenuOpen(false)} style={{ color: '#ff9017', fontWeight: 700 }}>
+                  ⚙ Admin Panel
+                </Link>
+              )}
+              <div className="drawer-divider"></div>
+              {currentUser ? (
+                <button className="btn-drawer-logout" onClick={() => { logout(); setMobileMenuOpen(false); }}>
+                  <FaSignOutAlt /> Logout
+                </button>
+              ) : (
+                <div className="drawer-auth-links">
+                  <Link to="/login" className="btn-drawer-login" onClick={() => setMobileMenuOpen(false)}>Sign In</Link>
+                  <Link to="/signup" className="btn-drawer-signup" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
