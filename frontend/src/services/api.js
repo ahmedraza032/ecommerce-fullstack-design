@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { auth } from './firebase';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/_/backend/api');
+// In local dev, Vite proxies /api → localhost:5000
+// In production, Vercel routes /api/* → backend serverless function
+const BASE_URL = '/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
