@@ -59,9 +59,19 @@ export const updateProduct = (id, data) => api.put(`/products/${id}`, data);
 /** Delete a product */
 export const deleteProduct = (id) => api.delete(`/products/${id}`);
 
-/** Upload an image */
-export const uploadImage = (formData) => api.post('/products/upload', formData, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-});
+/** Upload an image - Converts file to Base64 Data URL directly to completely bypass Vercel serverless multipart/multer limitations */
+export const uploadImage = async (formData) => {
+  const file = formData.get('image');
+  if (!file) {
+    throw new Error('No file selected');
+  }
+  const base64Url = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+  return { success: true, url: base64Url };
+};
 
 export default api;
