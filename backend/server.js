@@ -84,3 +84,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Export for Vercel Serverless Functions
 module.exports = app;
+module.exports.config = {
+  api: {
+    bodyParser: false,
+  },
+};

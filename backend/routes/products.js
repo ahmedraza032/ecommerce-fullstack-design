@@ -54,19 +54,25 @@ async function authenticateAdmin(req, res, next) {
 }
 
 // ── POST /api/products/upload ──────────────────────────────────────────────────
-router.post('/upload', authenticateAdmin, upload.single('image'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ success: false, error: 'No file uploaded' });
+router.post('/upload', authenticateAdmin, (req, res) => {
+  upload.single('image')(req, res, (err) => {
+    if (err) {
+      console.error('Multer upload error:', err);
+      return res.status(500).json({ success: false, error: 'Upload error: ' + err.message });
     }
-    // Convert buffer to Base64 Data URL to bypass Vercel serverless read-only filesystem
-    const base64Image = req.file.buffer.toString('base64');
-    const fileUrl = `data:${req.file.mimetype};base64,${base64Image}`;
-    res.json({ success: true, url: fileUrl });
-  } catch (err) {
-    console.error('POST /upload error:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: 'No file uploaded' });
+      }
+      // Convert buffer to Base64 Data URL to bypass Vercel serverless read-only filesystem
+      const base64Image = req.file.buffer.toString('base64');
+      const fileUrl = `data:${req.file.mimetype};base64,${base64Image}`;
+      res.json({ success: true, url: fileUrl });
+    } catch (error) {
+      console.error('POST /upload processing error:', error);
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
 });
 
 // ── GET /api/products/featured ─────────────────────────────────────────────────
